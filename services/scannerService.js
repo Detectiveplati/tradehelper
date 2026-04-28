@@ -4,6 +4,8 @@
  */
 
 const fetch = require('node-fetch');
+const YahooFinanceClass = require('yahoo-finance2').default;
+const yahooFinance = new YahooFinanceClass({ suppressNotices: ['yahooSurvey'] });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Configuration
@@ -12,9 +14,12 @@ const fetch = require('node-fetch');
 const FINNHUB_BASE_URL = 'https://finnhub.io/api/v1';
 const POLYGON_BASE_URL = 'https://api.polygon.io';
 const ALPHAVANTAGE_BASE_URL = 'https://www.alphavantage.co';
+const IEX_BASE_URL = 'https://cloud.iexapis.com/stable';
 
 const STOCK_API_PROVIDER = process.env.STOCK_API_PROVIDER || 'finnhub';
 const STOCK_API_KEY = process.env.STOCK_API_KEY || '';
+const IEX_API_KEY = process.env.IEX_API_KEY || '';
+const POLYGON_API_KEY = process.env.POLYGON_API_KEY || '';
 const FRED_API_KEY = process.env.FRED_API_KEY || '';
 
 // 100 popular stocks for day trading (default watchlist)
@@ -22,39 +27,35 @@ const DEFAULT_WATCHLIST = [
   // Tech Giants (10)
   'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'META', 'NVDA', 'AMD', 'NFLX', 'INTC',
   // Semiconductors (8)
-  'QCOM', 'AVGO', 'MCHP', 'LRCX', 'NXPI', 'ASML', 'SLAB', 'MRVL',
-  // Cloud/SaaS (12)
-  'SHOP', 'CRWD', 'OKTA', 'SNOW', 'DDOG', 'NET', 'CYBR', 'PANW', 'UPST', 'AFRM', 'COIN', 'RBLX',
-  // Fintech (6)
-  'SQ', 'PYPL', 'V', 'MA', 'AFRM', 'DASH',
+  'QCOM', 'AVGO', 'MCHP', 'LRCX', 'ASML', 'MRVL', 'KLAC', 'AMAT',
+  // Cloud/SaaS (8)
+  'SHOP', 'CRWD', 'SNOW', 'DDOG', 'NET', 'PANW', 'COIN', 'RBLX',
+  // Fintech (5)
+  'SQ', 'PYPL', 'AFRM', 'DASH', 'HOOD',
   // Financial Services (10)
-  'JPM', 'BAC', 'WFC', 'GS', 'MS', 'BLK', 'BX', 'KKR', 'APO', 'SCHW',
+  'JPM', 'BAC', 'WFC', 'GS', 'MS', 'V', 'MA', 'BLK', 'SCHW', 'AXP',
   // Healthcare/Pharma (10)
-  'JNJ', 'PFE', 'ABBV', 'MRK', 'AZN', 'BNTX', 'MRNA', 'VRTX', 'REGN', 'AMGN',
-  // Retail/Consumer (10)
-  'WMT', 'TGT', 'HD', 'LOW', 'DIS', 'MCD', 'SBUX', 'BKNG', 'ABNB', 'RH',
-  // Industrial/Aerospace (8)
-  'CAT', 'BA', 'GE', 'RTX', 'LMT', 'NOC', 'COST', 'MMM',
-  // Energy (6)
-  'XOM', 'CVX', 'COP', 'MPC', 'PSX', 'EOG',
-  // Communications (4)
-  'CRM', 'ADBE', 'AVGO', 'ASML',
-  // Transportation/Auto (5)
-  'F', 'GM', 'TM', 'HMC', 'LI',
-  // Hospitality/Airlines (4)
-  'AAL', 'DAL', 'UAL', 'MGM',
-  // Real Estate/Property (4)
-  'SPG', 'PLD', 'DLR', 'EQIX',
-  // ETFs & Indices (8)
-  'SPY', 'QQQ', 'IWM', 'EEM', 'EWJ', 'EWG', 'FXI', 'ASHR',
-  // Commodities/Fixed Income (5)
-  'GLD', 'SLV', 'TLT', 'IEF', 'AGG',
-  // EV/Auto Adjacent (4)
-  'NIO', 'XPEV', 'RIVN', 'LCID',
-  // Utilities (3)
-  'NEE', 'DUK', 'SO',
-  // Biotech (5)
-  'BIIB', 'GILD', 'ILMN', 'VEEV', 'ZOOM'
+  'JNJ', 'PFE', 'ABBV', 'MRK', 'MRNA', 'VRTX', 'REGN', 'AMGN', 'LLY', 'BMY',
+  // Retail/Consumer (8)
+  'WMT', 'TGT', 'HD', 'LOW', 'COST', 'DIS', 'MCD', 'SBUX',
+  // Industrial/Aerospace (6)
+  'CAT', 'BA', 'GE', 'RTX', 'LMT', 'HON',
+  // Energy (5)
+  'XOM', 'CVX', 'COP', 'EOG', 'SLB',
+  // Software/Enterprise (6)
+  'CRM', 'ADBE', 'ORCL', 'NOW', 'INTU', 'OKTA',
+  // Transportation/Airlines (6)
+  'UBER', 'LYFT', 'AAL', 'DAL', 'UAL', 'LUV',
+  // Real Estate (4)
+  'SPG', 'PLD', 'EQIX', 'AMT',
+  // ETFs (5)
+  'SPY', 'QQQ', 'IWM', 'GLD', 'TLT',
+  // EV (3)
+  'NIO', 'RIVN', 'LCID',
+  // Telecom/Media (4)
+  'T', 'VZ', 'CMCSA', 'BKNG',
+  // Biotech (2)
+  'BIIB', 'GILD',
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -63,18 +64,48 @@ const DEFAULT_WATCHLIST = [
 
 async function fetchStockData(ticker) {
   try {
+    // Try primary provider
     if (STOCK_API_PROVIDER === 'finnhub') {
       return await fetchFromFinnhub(ticker);
     } else if (STOCK_API_PROVIDER === 'polygon') {
       return await fetchFromPolygon(ticker);
     } else if (STOCK_API_PROVIDER === 'alphavantage') {
       return await fetchFromAlphaVantage(ticker);
-    } else {
+    }
+    
+    // Try Finnhub as default fallback
+    try {
+      return await fetchFromFinnhub(ticker);
+    } catch (e) {
+      // If Finnhub fails and IEX key available, try IEX Cloud
+      if (IEX_API_KEY && IEX_API_KEY !== 'pk_test_none') {
+        try {
+          return await fetchFromIEX(ticker);
+        } catch (iexErr) {
+          // Fall back to mock
+          return generateMockStockData(ticker);
+        }
+      }
       return generateMockStockData(ticker);
     }
   } catch (err) {
     console.error(`⚠️  Stock data error (${ticker}):`, err.message);
     return null;
+  }
+}
+
+async function fetchBidAskFromYahoo(ticker) {
+  // yahoo-finance2 handles Yahoo Finance auth/crumb automatically — free, no API key required
+  try {
+    const result = await yahooFinance.quote(ticker);
+    return {
+      bid: result.bid || null,
+      ask: result.ask || null,
+      bidSize: result.bidSize || 0,
+      askSize: result.askSize || 0,
+    };
+  } catch (e) {
+    return { bid: null, ask: null };
   }
 }
 
@@ -94,19 +125,22 @@ async function fetchFromFinnhub(ticker) {
 
   const changePercent = ((data.c - data.pc) / data.pc) * 100;
 
+  // Finnhub free plan doesn't include bid/ask — fetch from Yahoo Finance (free, no key)
+  const bidAsk = await fetchBidAskFromYahoo(ticker);
+
   return {
     ticker,
     currentPrice: data.c,
     previousClose: data.pc,
-    bid: data.bid || null,
-    ask: data.ask || null,
-    bidSize: data.bidSize,
-    askSize: data.askSize,
+    bid: bidAsk.bid,
+    ask: bidAsk.ask,
+    bidSize: bidAsk.bidSize,
+    askSize: bidAsk.askSize,
     timestamp: new Date().toISOString(),
     dataQuality: 'real',
     change: data.c - data.pc,
     changePercent,
-    isPremarket: false, // Finnhub quote doesn't distinguish premarket
+    isPremarket: false,
   };
 }
 
@@ -181,6 +215,40 @@ async function fetchFromAlphaVantage(ticker) {
   };
 }
 
+async function fetchFromIEX(ticker) {
+  // IEX Cloud free tier provides bid/ask data
+  const url = `${IEX_BASE_URL}/stock/${ticker}/quote?token=${IEX_API_KEY}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`IEX API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  if (!data.latestPrice) {
+    throw new Error(`IEX: No data for ${ticker}`);
+  }
+
+  const change = data.latestPrice - data.previousClose;
+  const changePercent = data.previousClose ? (change / data.previousClose) * 100 : 0;
+
+  return {
+    ticker,
+    currentPrice: data.latestPrice,
+    previousClose: data.previousClose || 0,
+    bid: data.iexBidPrice || data.bidPrice || null,
+    ask: data.iexAskPrice || data.askPrice || null,
+    bidSize: data.iexBidSize || data.bidSize || 0,
+    askSize: data.iexAskSize || data.askSize || 0,
+    timestamp: new Date().toISOString(),
+    dataQuality: 'real',
+    change,
+    changePercent,
+    isPremarket: false,
+  };
+}
+
 function generateMockStockData(ticker) {
   const moves = [-8, -5, -2, 2, 4, 6, 8, 12];
   const randomMove = moves[Math.floor(Math.random() * moves.length)];
@@ -226,9 +294,9 @@ function calculateSpread(bid, ask) {
   const spreadPercent = ((spread / bid) * 100).toFixed(3);
 
   let tightness = 'wide';
-  if (spreadPercent < 0.05) tightness = 'tight';
-  else if (spreadPercent < 0.10) tightness = 'normal';
-  else if (spreadPercent < 0.20) tightness = 'slightly-wide';
+  if (spreadPercent < 0.05) tightness = 'tight';         // < 0.05%: e.g. TSLA $0.06 on $379
+  else if (spreadPercent < 0.20) tightness = 'normal';   // 0.05-0.20%: e.g. AAPL $0.42 on $267
+  else if (spreadPercent < 0.50) tightness = 'slightly-wide'; // 0.20-0.50%
 
   return {
     spread: spread.toFixed(2),
@@ -313,8 +381,9 @@ function classifyScannerStatus(candidate, marketBias) {
   if (Math.abs(premarketMovePercent) <= 1) rejectReasons.push('No significant premarket move');
   if (relativeVolume < 1) rejectReasons.push('Low relative volume');
   if (!hasNews) rejectReasons.push('No news catalyst');
-  if (spread.tightness === 'wide' || spread.tightness === 'unavailable')
-    rejectReasons.push('Wide spread or unavailable');
+  if (spread.tightness === 'wide')
+    rejectReasons.push('Wide spread');
+  // Note: 'unavailable' spread (outside market hours) is not a rejection reason
   if (liquidityScore < 40) rejectReasons.push('Poor liquidity');
   if (marketBias === 'Risk-Off') rejectReasons.push('Market in Risk-Off mode');
 
