@@ -417,6 +417,330 @@
             opacity: 0.6;
         }
 
+        /* Step 2: Scanner Section */
+        .scanner-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #334155;
+        }
+
+        .scanner-header {
+            margin-bottom: 20px;
+        }
+
+        .scanner-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: #f1f5f9;
+        }
+
+        .scanner-header p {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        .watchlist-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .watchlist-input-group input {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px 14px;
+            background-color: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        .watchlist-input-group input::placeholder {
+            color: #64748b;
+        }
+
+        .watchlist-input-group input:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        .scan-btn {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .scan-btn:hover {
+            background-color: #059669;
+        }
+
+        .scan-btn:disabled {
+            background-color: #6b7280;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .watchlist-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        .watchlist-info span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background-color: rgba(96, 165, 250, 0.2);
+            border: 1px solid #60a5fa;
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #60a5fa;
+        }
+
+        .scanner-loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .scanner-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-top: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card.watch {
+            border-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        .stat-card.watch .stat-value {
+            color: #10b981;
+        }
+
+        .stat-card.caution {
+            border-color: #f59e0b;
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+
+        .stat-card.caution .stat-value {
+            color: #f59e0b;
+        }
+
+        .stat-card.reject {
+            border-color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .stat-card.reject .stat-value {
+            color: #ef4444;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 14px;
+            background-color: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: #cbd5e1;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .filter-btn:hover {
+            background-color: #475569;
+        }
+
+        .filter-btn.active {
+            background-color: #60a5fa;
+            border-color: #60a5fa;
+            color: white;
+        }
+
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .candidate-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .candidate-card:hover {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        .candidate-card.watch {
+            border-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        .candidate-card.caution {
+            border-color: #f59e0b;
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+
+        .candidate-card.reject {
+            border-color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .candidate-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .candidate-ticker {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .candidate-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .candidate-status.watch {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .candidate-status.caution {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+
+        .candidate-status.reject {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .candidate-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .candidate-explanation {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-left: 3px solid #60a5fa;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .rejection-reasons {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 0.8rem;
+            color: #fecaca;
+            line-height: 1.4;
+        }
+
+        .rejection-reasons ul {
+            margin-left: 16px;
+            margin-top: 4px;
+        }
+
+        .rejection-reasons li {
+            margin-bottom: 3px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             h1 {
@@ -450,8 +774,8 @@
 <body>
     <div class="container">
         <header>
-            <h1>📊 Market Condition Dashboard</h1>
-            <p class="subtitle">Real-time market environment for day trading decisions</p>
+            <h1>📊 Market Condition Dashboard + Trade Scanner</h1>
+            <p class="subtitle">Real-time market environment & candidate identification for day trading</p>
         </header>
 
         <!-- Error Banner -->
@@ -476,7 +800,66 @@
                 <div class="drawer-content" id="drawerContent"></div>
             </div>
 
-            <!-- Content Area - Leave space for Step 2 -->
+            <!-- Step 2: Trade Candidate Scanner -->
+            <div class="scanner-section">
+                <div class="scanner-header">
+                    <h2>📈 Step 2: Trade Candidate Scanner</h2>
+                    <p>Identify stocks worth analyzing with real-time market data</p>
+                </div>
+
+                <!-- Watchlist Input -->
+                <div class="watchlist-input-group">
+                    <input 
+                        type="text" 
+                        id="customWatchlist" 
+                        placeholder="Enter custom watchlist (comma-separated, e.g., AAPL,MSFT,GOOGL) or leave blank for 100 popular stocks"
+                    />
+                    <button class="scan-btn" id="scanBtn" onclick="scanCandidates()">🔍 Scan</button>
+                </div>
+
+                <!-- Watchlist Info -->
+                <div class="watchlist-info">
+                    <span>
+                        Default: <span class="info-badge">100 Popular Stocks</span>
+                    </span>
+                    <span id="customWatchlistInfo" style="display: none;">
+                        Custom: <span id="customCount" class="info-badge">0 stocks</span>
+                    </span>
+                </div>
+
+                <!-- Scanner Loading/Error -->
+                <div id="scannerError" class="error-banner" style="display: none;"></div>
+
+                <!-- Scanner Loading State -->
+                <div id="scannerLoading" class="scanner-loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 16px;">Scanning stocks...</p>
+                </div>
+
+                <!-- Scanner Results -->
+                <div id="scannerResults" style="display: none;">
+                    <!-- Statistics -->
+                    <div class="scanner-stats" id="scannerStats"></div>
+
+                    <!-- Filter Buttons -->
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="setScannerFilter('all')">All</button>
+                        <button class="filter-btn" onclick="setScannerFilter('watch')">✅ Watch</button>
+                        <button class="filter-btn" onclick="setScannerFilter('caution')">⚠️ Caution</button>
+                        <button class="filter-btn" onclick="setScannerFilter('reject')">❌ Reject</button>
+                    </div>
+
+                    <!-- Candidates Grid -->
+                    <div class="candidates-grid" id="candidatesGrid"></div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="scannerEmpty" style="display: none; text-align: center; padding: 40px; color: #94a3b8;">
+                    <p>Click the Scan button above to analyze trade candidates</p>
+                </div>
+            </div>
+
+            <!-- Content Area -->
             <div class="content-area" id="contentArea"></div>
 
             <!-- Footer -->
@@ -795,13 +1178,203 @@
         }
 
         // ─────────────────────────────────────────────────────────────────────────────
+        // Step 2: Scanner Functions
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        let scannerData = null;
+        let scannerFilter = 'all';
+
+        function updateWatchlistInfo() {
+            const customInput = document.getElementById('customWatchlist').value.trim();
+            const infoDiv = document.getElementById('customWatchlistInfo');
+            const countSpan = document.getElementById('customCount');
+
+            if (customInput) {
+                const stocks = customInput.split(',').map(s => s.trim().toUpperCase()).filter(s => s.length > 0);
+                countSpan.textContent = `${stocks.length} custom stocks`;
+                infoDiv.style.display = 'inline-flex';
+            } else {
+                infoDiv.style.display = 'none';
+            }
+        }
+
+        async function scanCandidates() {
+            try {
+                const scanBtn = document.getElementById('scanBtn');
+                scanBtn.disabled = true;
+
+                document.getElementById('scannerError').style.display = 'none';
+                document.getElementById('scannerEmpty').style.display = 'none';
+                document.getElementById('scannerResults').style.display = 'none';
+                document.getElementById('scannerLoading').style.display = 'block';
+
+                const customInput = document.getElementById('customWatchlist').value.trim();
+                let url = '/api/scanner/candidates';
+
+                if (customInput) {
+                    const stocks = customInput.split(',').map(s => s.trim().toUpperCase()).filter(s => s.length > 0);
+                    url += `?watchlist=${stocks.join(',')}`;
+                }
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                scannerData = data;
+                scannerFilter = 'all';
+
+                renderScannerResults(data);
+                document.getElementById('scannerLoading').style.display = 'none';
+                document.getElementById('scannerResults').style.display = 'block';
+
+                // Reset filter buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelectorAll('.filter-btn')[0].classList.add('active');
+            } catch (err) {
+                console.error('Scanner error:', err);
+                document.getElementById('scannerLoading').style.display = 'none';
+                const errorDiv = document.getElementById('scannerError');
+                errorDiv.innerHTML = `<strong>Error:</strong> ${err.message}`;
+                errorDiv.style.display = 'block';
+                document.getElementById('scanBtn').disabled = false;
+            }
+        }
+
+        function renderScannerResults(data) {
+            const stats = {
+                watch: data.candidates.filter(c => c.scannerStatus === 'Watch').length,
+                caution: data.candidates.filter(c => c.scannerStatus === 'Caution').length,
+                reject: data.candidates.filter(c => c.scannerStatus === 'Reject').length,
+            };
+
+            const statsHTML = `
+                <div class="stat-card watch">
+                    <div class="stat-value">${stats.watch}</div>
+                    <div class="stat-label">Watch</div>
+                </div>
+                <div class="stat-card caution">
+                    <div class="stat-value">${stats.caution}</div>
+                    <div class="stat-label">Caution</div>
+                </div>
+                <div class="stat-card reject">
+                    <div class="stat-value">${stats.reject}</div>
+                    <div class="stat-label">Reject</div>
+                </div>
+            `;
+
+            document.getElementById('scannerStats').innerHTML = statsHTML;
+            setScannerFilter('all');
+        }
+
+        function setScannerFilter(filterType) {
+            scannerFilter = filterType;
+
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Find and activate the correct button based on filter type
+            const buttonTexts = { 'all': 'All', 'watch': 'Watch', 'caution': 'Caution', 'reject': 'Reject' };
+            const targetText = buttonTexts[filterType] || 'All';
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.textContent.includes(targetText)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Filter and render candidates
+            let filtered = scannerData.candidates;
+            if (filterType !== 'all') {
+                filtered = scannerData.candidates.filter(c => c.scannerStatus.toLowerCase() === filterType);
+            }
+
+            renderCandidates(filtered);
+        }
+
+        function renderCandidates(candidates) {
+            if (!candidates || candidates.length === 0) {
+                document.getElementById('candidatesGrid').innerHTML = '<p style="color: #94a3b8; text-align: center; grid-column: 1/-1; padding: 30px;">No candidates match this filter</p>';
+                return;
+            }
+
+            const html = candidates.map(candidate => {
+                const statusClass = candidate.scannerStatus.toLowerCase();
+                const explanations = candidate.explanations || {};
+
+                let rejectionHTML = '';
+                if (candidate.rejectionReason) {
+                    const reasons = Array.isArray(candidate.rejectionReason) ? candidate.rejectionReason : [candidate.rejectionReason];
+                    rejectionHTML = `
+                        <div class="rejection-reasons">
+                            <strong>Why Rejected:</strong>
+                            <ul>
+                                ${reasons.map(r => `<li>${r}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="candidate-card ${statusClass}">
+                        <div class="candidate-header">
+                            <span class="candidate-ticker">${candidate.ticker}</span>
+                            <span class="candidate-status ${statusClass}">${candidate.scannerStatus}</span>
+                        </div>
+                        <div class="candidate-metrics">
+                            <div class="metric">
+                                <span class="metric-label">Price</span>
+                                <span class="metric-value">$${candidate.currentPrice.toFixed(2)}</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Premarket Move</span>
+                                <span class="metric-value" style="color: ${candidate.premarketMovePercent > 0 ? '#10b981' : '#ef4444'}">
+                                    ${candidate.premarketMovePercent > 0 ? '+' : ''}${candidate.premarketMovePercent.toFixed(2)}%
+                                </span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Relative Volume</span>
+                                <span class="metric-value">${candidate.relativeVolume}x</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Spread</span>
+                                <span class="metric-value">${candidate.spreadValue != null ? '$' + parseFloat(candidate.spreadValue).toFixed(4) : '—'}</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Liquidity Score</span>
+                                <span class="metric-value">${candidate.liquidityScore}/100</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Tightness</span>
+                                <span class="metric-value">${candidate.tightness || '—'}</span>
+                            </div>
+                        </div>
+                        ${explanations.premarketMove ? `<div class="candidate-explanation">${explanations.premarketMove}</div>` : ''}
+                        ${explanations.liquidity ? `<div class="candidate-explanation">${explanations.liquidity}</div>` : ''}
+                        ${rejectionHTML}
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('candidatesGrid').innerHTML = html;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
         // Initialization
         // ─────────────────────────────────────────────────────────────────────────────
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchMarketCondition();
 
-            // Auto-refresh every 5 minutes
+            // Monitor custom watchlist input
+            document.getElementById('customWatchlist').addEventListener('input', updateWatchlistInfo);
+
+            // Auto-refresh market data every 5 minutes
             setInterval(fetchMarketCondition, 5 * 60 * 1000);
         });
     </script>

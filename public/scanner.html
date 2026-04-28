@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Candidate Scanner | Step 2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #f1f5f9;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 6px;
+            background-color: rgba(100, 116, 139, 0.2);
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(100, 116, 139, 0.4);
+            border-color: #475569;
+        }
+
+        .nav-link.active {
+            background-color: #3b82f6;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        /* Market Bias Summary */
+        .bias-info {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bias-info.bullish {
+            border-color: #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+        }
+
+        .bias-info.bearish {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+        }
+
+        .bias-info.mixed {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
+        }
+
+        .bias-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #cbd5e1;
+        }
+
+        .bias-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .bias-info.bullish .bias-value {
+            color: #10b981;
+        }
+
+        .bias-info.bearish .bias-value {
+            color: #ef4444;
+        }
+
+        .bias-info.mixed .bias-value {
+            color: #f59e0b;
+        }
+
+        /* Filter Panel */
+        .filter-panel {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .filter-button {
+            padding: 6px 12px;
+            border-radius: 6px;
+            background-color: rgba(100, 116, 139, 0.2);
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .filter-button:hover {
+            background-color: rgba(100, 116, 139, 0.4);
+            border-color: #475569;
+        }
+
+        .filter-button.active {
+            background-color: #3b82f6;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .stat-value.watch {
+            color: #10b981;
+        }
+
+        .stat-value.caution {
+            color: #f59e0b;
+        }
+
+        .stat-value.reject {
+            color: #ef4444;
+        }
+
+        /* Loading & Error */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #475569;
+            border-top-color: #60a5fa;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-banner {
+            background-color: #7f1d1d;
+            border: 1px solid #dc2626;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            color: #fecaca;
+            font-size: 0.9rem;
+        }
+
+        /* Candidates Grid */
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .candidate-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .candidate-card:hover {
+            border-color: #475569;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .candidate-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .ticker-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ticker {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .company {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-badge.watch {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .status-badge.caution {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+
+        .status-badge.reject {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        /* Price & Change */
+        .price-section {
+            margin-bottom: 12px;
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .price-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .price-label {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+        }
+
+        .price-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .change-positive {
+            color: #10b981;
+        }
+
+        .change-negative {
+            color: #ef4444;
+        }
+
+        .change-flat {
+            color: #94a3b8;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .metric {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .metric-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .metric-bar {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(100, 116, 139, 0.3);
+            border-radius: 2px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .metric-fill {
+            height: 100%;
+            background-color: #60a5fa;
+            border-radius: 2px;
+            transition: width 0.2s ease;
+        }
+
+        /* Explanations */
+        .explanations {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-left: 3px solid #60a5fa;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .explanation-item {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .explanation-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .explanation-label {
+            font-weight: 600;
+            color: #f1f5f9;
+            display: inline;
+        }
+
+        .explanation-text {
+            display: inline;
+        }
+
+        /* Rejection Reason */
+        .rejection-reason {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 12px;
+            font-size: 0.8rem;
+            color: #fecaca;
+        }
+
+        /* Actions */
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .analyse-btn {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .analyse-btn:hover {
+            background-color: #2563eb;
+        }
+
+        .analyse-btn:disabled {
+            background-color: #6b7280;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            margin-top: 40px;
+        }
+
+        .footer-button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-weight: 600;
+        }
+
+        .footer-button:hover {
+            background-color: #2563eb;
+        }
+
+        .footer-button:disabled {
+            background-color: #6b7280;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .candidates-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-panel {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📈 Trade Candidate Scanner</h1>
+            <p class="subtitle">Step 2: Find stocks worth analyzing for day trading</p>
+        </header>
+
+        <!-- Navigation -->
+        <div class="nav">
+            <a href="index.html" class="nav-link">← Step 1: Market Bias</a>
+            <span style="color: #94a3b8;">•</span>
+            <span style="color: #f1f5f9; font-weight: 600;">Step 2: Scan Candidates</span>
+        </div>
+
+        <!-- Error Banner -->
+        <div id="errorBanner" class="error-banner" style="display: none;"></div>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p style="margin-top: 16px;">Scanning for trade candidates...</p>
+        </div>
+
+        <!-- Main Content -->
+        <div id="content" style="display: none;">
+            <!-- Market Bias Info -->
+            <div id="biasInfo" class="bias-info"></div>
+
+            <!-- Filter Panel -->
+            <div class="filter-panel">
+                <div class="filter-group">
+                    <span class="filter-label">Filter by Status:</span>
+                    <button class="filter-button active" onclick="setFilter('all')">All</button>
+                    <button class="filter-button" onclick="setFilter('Watch')">Watch</button>
+                    <button class="filter-button" onclick="setFilter('Caution')">Caution</button>
+                    <button class="filter-button" onclick="setFilter('Reject')">Reject</button>
+                </div>
+                <div style="flex: 1;"></div>
+                <button class="footer-button" onclick="refreshScan()" id="refreshBtn">🔄 Refresh Scan</button>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats" id="stats"></div>
+
+            <!-- Candidates Grid -->
+            <div class="candidates-grid" id="candidatesGrid"></div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p style="margin-bottom: 15px;">ℹ️ Only <strong>Watch</strong> and <strong>Caution</strong> stocks can proceed to detailed analysis</p>
+                <p style="font-size: 0.7rem; color: #64748b; margin-top: 10px;">
+                    This scanner only identifies candidates worth analyzing. It does NOT provide buy/sell signals.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ─────────────────────────────────────────────────────────────────────────────
+        // State Management
+        // ─────────────────────────────────────────────────────────────────────────────
+        let allCandidates = [];
+        let currentFilter = 'all';
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // UI Helpers
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('content').style.display = 'none';
+            document.getElementById('errorBanner').style.display = 'none';
+        }
+
+        function showContent() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        }
+
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            const banner = document.getElementById('errorBanner');
+            banner.innerHTML = `<strong>Error:</strong> ${message}`;
+            banner.style.display = 'block';
+        }
+
+        function formatValue(value, type = 'number') {
+            if (value === null || value === undefined) return '—';
+            if (type === 'percent') return `${value > 0 ? '+' : ''}${value.toFixed(2)}%`;
+            if (type === 'price') return `$${value.toFixed(2)}`;
+            if (type === 'volume') return `${(value / 1000000).toFixed(1)}M`;
+            return value.toFixed(2);
+        }
+
+        function getChangeClass(value) {
+            if (value > 0) return 'change-positive';
+            if (value < 0) return 'change-negative';
+            return 'change-flat';
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Render Functions
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        function renderBiasInfo(marketBias) {
+            const biasClass = marketBias === 'Bullish' ? 'bullish' : marketBias === 'Bearish' ? 'bearish' : marketBias === 'Risk-Off' ? 'bearish' : 'mixed';
+
+            const html = `
+                <div>
+                    <div class="bias-label">Today's Market Bias</div>
+                    <div class="bias-value">${marketBias}</div>
+                </div>
+                <div style="text-align: right; font-size: 0.85rem; color: #cbd5e1;">
+                    Use this to contextualize scanner results. Stocks may be rejected in Risk-Off markets.
+                </div>
+            `;
+
+            const element = document.getElementById('biasInfo');
+            element.className = `bias-info ${biasClass}`;
+            element.innerHTML = html;
+        }
+
+        function renderStats(candidates) {
+            const stats = {
+                watch: candidates.filter(c => c.scannerStatus === 'Watch').length,
+                caution: candidates.filter(c => c.scannerStatus === 'Caution').length,
+                reject: candidates.filter(c => c.scannerStatus === 'Reject').length,
+                total: candidates.length,
+            };
+
+            const html = `
+                <div class="stat-card">
+                    <div class="stat-label">Watch</div>
+                    <div class="stat-value watch">${stats.watch}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Caution</div>
+                    <div class="stat-value caution">${stats.caution}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Reject</div>
+                    <div class="stat-value reject">${stats.reject}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Scanned</div>
+                    <div class="stat-value">${stats.total}</div>
+                </div>
+            `;
+
+            document.getElementById('stats').innerHTML = html;
+        }
+
+        function renderCandidateCard(candidate) {
+            const statusClass = candidate.scannerStatus.toLowerCase();
+            const changeClass = getChangeClass(candidate.premarketMovePercent);
+            const canAnalyse = candidate.scannerStatus === 'Watch' || candidate.scannerStatus === 'Caution';
+
+            let explanationHtml = '';
+            if (candidate.explanations) {
+                const expl = candidate.explanations;
+                explanationHtml = `
+                    <div class="explanations">
+                        <div class="explanation-item">
+                            <span class="explanation-label">📊 Premarket:</span>
+                            <span class="explanation-text">${expl.premarketMove || 'N/A'}</span>
+                        </div>
+                        <div class="explanation-item">
+                            <span class="explanation-label">📈 Volume:</span>
+                            <span class="explanation-text">${expl.relativeVolume || 'N/A'}</span>
+                        </div>
+                        <div class="explanation-item">
+                            <span class="explanation-label">💰 Spread:</span>
+                            <span class="explanation-text">${expl.spread || 'N/A'}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            let rejectionHtml = '';
+            if (candidate.scannerStatus === 'Reject' && candidate.rejectionReason) {
+                rejectionHtml = `<div class="rejection-reason">❌ ${candidate.rejectionReason}</div>`;
+            }
+
+            return `
+                <div class="candidate-card">
+                    <div class="candidate-header">
+                        <div class="ticker-info">
+                            <div class="ticker">${candidate.ticker}</div>
+                            <div class="company">${candidate.companyName}</div>
+                        </div>
+                        <div class="status-badge ${statusClass}">${candidate.scannerStatus}</div>
+                    </div>
+
+                    <div class="price-section">
+                        <div class="price-row">
+                            <span class="price-label">Current Price</span>
+                            <span class="price-value">${formatValue(candidate.currentPrice, 'price')}</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price-label">Premarket Move</span>
+                            <span class="price-value ${changeClass}">${formatValue(candidate.premarketMovePercent, 'percent')}</span>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-label">Relative Volume</div>
+                            <div class="metric-value">${formatValue(candidate.relativeVolume)}x</div>
+                            <div class="metric-bar">
+                                <div class="metric-fill" style="width: ${Math.min(100, (candidate.relativeVolume / 4) * 100)}%"></div>
+                            </div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Liquidity Score</div>
+                            <div class="metric-value">${candidate.liquidityScore}/100</div>
+                            <div class="metric-bar">
+                                <div class="metric-fill" style="width: ${candidate.liquidityScore}%"></div>
+                            </div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Bid-Ask Spread</div>
+                            <div class="metric-value">${candidate.spread ? formatValue(candidate.spread, 'price') : 'N/A'}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Daily Volume</div>
+                            <div class="metric-value">${formatValue(candidate.dailyVolume, 'volume')}</div>
+                        </div>
+                    </div>
+
+                    ${explanationHtml}
+                    ${rejectionHtml}
+
+                    <div class="card-actions">
+                        <button 
+                            class="action-btn analyse-btn" 
+                            onclick="analyzeStock('${candidate.ticker}')"
+                            ${!canAnalyse ? 'disabled' : ''}
+                        >
+                            ${canAnalyse ? '📊 Analyse' : '❌ Not Available'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCandidates(candidates) {
+            const filtered = currentFilter === 'all' 
+                ? candidates 
+                : candidates.filter(c => c.scannerStatus === currentFilter);
+
+            const html = filtered.map(c => renderCandidateCard(c)).join('');
+            document.getElementById('candidatesGrid').innerHTML = html || '<p style="color: #94a3b8; padding: 20px;">No candidates match current filter</p>';
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // API Fetch
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        async function fetchCandidates() {
+            try {
+                showLoading();
+                const response = await fetch('/api/scanner/candidates');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                allCandidates = data.candidates;
+
+                renderBiasInfo(data.marketBias);
+                renderStats(allCandidates);
+                renderCandidates(allCandidates);
+
+                showContent();
+            } catch (err) {
+                console.error('Fetch error:', err);
+                showError(`Failed to fetch candidates: ${err.message}`);
+            }
+        }
+
+        function setFilter(status) {
+            currentFilter = status;
+
+            // Update buttons
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            renderCandidates(allCandidates);
+        }
+
+        function refreshScan() {
+            document.getElementById('refreshBtn').disabled = true;
+            fetchCandidates().finally(() => {
+                document.getElementById('refreshBtn').disabled = false;
+            });
+        }
+
+        function analyzeStock(ticker) {
+            // TODO: Navigate to Step 3: Stock Detail Analysis
+            alert(`📊 Stock Detail Analysis for ${ticker} would open here.\n\nThis is Step 3: Not yet implemented.`);
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Initialization
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCandidates();
+        });
+    </script>
+</body>
+</html>

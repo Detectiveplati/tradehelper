@@ -56,10 +56,15 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/market-condition', require('./routes/marketCondition'));
+app.use('/api/scanner', require('./routes/scanner'));
 
-// Serve index.html for root path
+// Serve HTML pages
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/scanner', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'scanner.html'));
 });
 
 // 404 handler
@@ -90,16 +95,18 @@ async function start() {
     app.listen(PORT, () => {
       console.log(`
 ╔════════════════════════════════════════════════════════════╗
-║     🎯 Trading Helper - Market Condition Dashboard        ║
+║     🎯 Trading Helper - Market Condition & Scanner       ║
 ╚════════════════════════════════════════════════════════════╝
 
 📊 Server running on http://localhost:${PORT}
 
 Routes:
-  🌐 Dashboard:      http://localhost:${PORT}
-  📈 Market Data:    http://localhost:${PORT}/api/market-condition
-  💾 Cached Data:    http://localhost:${PORT}/api/market-condition/cached
-  ❤️  Health Check:   http://localhost:${PORT}/health
+  🌐 Step 1 Dashboard:  http://localhost:${PORT}
+  📈 Step 2 Scanner:    http://localhost:${PORT}/scanner
+  📊 Market Data API:   http://localhost:${PORT}/api/market-condition
+  💾 Market Cache:      http://localhost:${PORT}/api/market-condition/cached
+  🔍 Scanner API:       http://localhost:${PORT}/api/scanner/candidates
+  ❤️  Health Check:      http://localhost:${PORT}/health
 
 Configuration:
   NODE_ENV:    ${process.env.NODE_ENV || 'development'}
