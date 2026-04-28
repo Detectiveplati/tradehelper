@@ -44,7 +44,7 @@ async function fetchFredData(seriesId) {
       return generateMockFredData(seriesId);
     }
 
-    const url = `${FRED_BASE_URL}/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&limit=2&sort_order=desc`;
+    const url = `${FRED_BASE_URL}/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&limit=2&sort_order=desc&file_type=json`;
     const response = await fetch(url);
 
     if (!response.ok) {
